@@ -1,48 +1,56 @@
-// Last updated: 16/07/2026, 09:03:13
-1class Solution {
-2    public String shortestPalindrome(String s) {
-3        if (s == null || s.length() <= 1) {
-4            return s;
-5        }
-6
-7        // Reverse the original string
-8        String reversed = new StringBuilder(s).reverse().toString();
-9        
-10        // Combine s and reversed with a separator
-11        String temp = s + "#" + reversed;
-12        
-13        // Compute the KMP LPS array for the combined string
-14        int[] lps = computeLPS(temp);
+// Last updated: 16/07/2026, 09:04:00
+1import java.util.*;
+2
+3class Solution {
+4    public List<List<Integer>> getSkyline(int[][] buildings) {
+5        List<List<Integer>> result = new ArrayList<>();
+6        List<int[]> events = new ArrayList<>();
+7        
+8        // 1. Convert buildings into start and end events
+9        for (int[] b : buildings) {
+10            // Use negative height for start event
+11            events.add(new int[]{b[0], -b[2]});
+12            // Use positive height for end event
+13            events.add(new int[]{b[1], b[2]});
+14        }
 15        
-16        // The length of the longest palindromic prefix
-17        int longestPalindromicPrefixLength = lps[temp.length() - 1];
-18        
-19        // The remaining part of the reversed string needs to be added to the front
-20        String suffixToAdd = reversed.substring(0, s.length() - longestPalindromicPrefixLength);
-21        
-22        return suffixToAdd + s;
-23    }
-24
-25    private int[] computeLPS(String str) {
-26        int n = str.length();
-27        int[] lps = new int[n];
-28        int len = 0; // Length of the previous longest prefix suffix
-29        int i = 1;
-30
-31        while (i < n) {
-32            if (str.charAt(i) == str.charAt(len)) {
-33                len++;
-34                lps[i] = len;
-35                i++;
-36            } else {
-37                if (len != 0) {
-38                    len = lps[len - 1]; // Fallback to the previous match
-39                } else {
-40                    lps[i] = 0;
-41                    i++;
-42                }
-43            }
-44        }
-45        return lps;
-46    }
-47}
+16        // 2. Sort events based on the rules described above
+17        Collections.sort(events, (a, b) -> {
+18            if (a[0] != b[0]) {
+19                return a[0] - b[0];
+20            }
+21            return a[1] - b[1];
+22        });
+23        
+24        // Max-heap to keep track of the current highest buildings
+25        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+26        // Ground level is always an option
+27        maxHeap.offer(0);
+28        
+29        int prevMaxHeight = 0;
+30        
+31        // 3. Process the events across the sweep line
+32        for (int[] event : events) {
+33            int x = event[0];
+34            int height = event[1];
+35            
+36            if (height < 0) {
+37                // Start of a building, add to active heights
+38                maxHeap.offer(-height);
+39            } else {
+40                // End of a building, remove from active heights
+41                maxHeap.remove(height);
+42            }
+43            
+44            // Get the current peak height
+45            int currentMaxHeight = maxHeap.peek();
+46           
+47            if (currentMaxHeight != prevMaxHeight) {
+48                result.add(Arrays.asList(x, currentMaxHeight));
+49                prevMaxHeight = currentMaxHeight;
+50            }
+51        }
+52        
+53        return result;
+54    }
+55}
