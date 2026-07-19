@@ -1,4 +1,4 @@
-// Last updated: 19/07/2026, 20:07:22
+// Last updated: 19/07/2026, 20:08:40
 1/**
 2 * Definition for singly-linked list.
 3 * public class ListNode {
@@ -10,28 +10,32 @@
 9 * }
 10 */
 11class Solution {
-12    public ListNode deleteDuplicates(ListNode head) {
-13        // Sentinel node to simplify edge cases where the head changes
-14        ListNode sentinel = new ListNode(0, head);
-15        ListNode prev = sentinel;
+12    public ListNode partition(ListNode head, int x) {
+13        // Dummy nodes to anchor the start of both chains
+14        ListNode beforeHead = new ListNode(0);
+15        ListNode afterHead = new ListNode(0);
 16        
-17        while (head != null) {
-18            // If it's a start of a duplicate sublist
-19            if (head.next != null && head.val == head.next.val) {
-20                // Move until the end of the duplicate sublist
-21                while (head.next != null && head.val == head.next.val) {
-22                    head = head.next;
-23                }
-24                // Skip all duplicates and connect prev to the next distinct node
-25                prev.next = head.next;
-26            } else {
-27                // No duplicate detected, safely move the prev pointer
-28                prev = prev.next;
-29            }
-30            // Move forward in the list
-31            head = head.next;
-32        }
-33        
-34        return sentinel.next;
-35    }
-36}
+17        // Pointers used to build up the two lists
+18        ListNode before = beforeHead;
+19        ListNode after = afterHead;
+20        
+21        while (head != null) {
+22            if (head.val < x) {
+23                before.next = head;
+24                before = before.next;
+25            } else {
+26                after.next = head;
+27                after = after.next;
+28            }
+29            head = head.next;
+30        }
+31        
+32        // Cut off any remaining nodes to prevent cycles
+33        after.next = null;
+34        
+35        // Link the end of the 'before' list to the beginning of the 'after' list
+36        before.next = afterHead.next;
+37        
+38        return beforeHead.next;
+39    }
+40}
