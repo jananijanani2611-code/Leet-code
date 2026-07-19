@@ -1,50 +1,38 @@
-// Last updated: 19/07/2026, 20:33:05
-1import java.util.*;
+// Last updated: 19/07/2026, 20:35:56
+1import java.util.Arrays;
 2
-3class SummaryRanges {
-4    private TreeMap<Integer, int[]> treeMap;
-5
-6    public SummaryRanges() {
-7        treeMap = new TreeMap<>();
-8    }
-9    
-10    public void addNum(int value) {
-11        if (treeMap.containsKey(value)) return;
-12        
-13        Integer l = treeMap.lowerKey(value);
-14        Integer h = treeMap.higherKey(value);
+3class Solution {
+4    public int maxEnvelopes(int[][] envelopes) {
+5        if (envelopes == null || envelopes.length == 0) return 0;
+6        
+7        // Sort width ascending, and height descending if widths are equal
+8        Arrays.sort(envelopes, (a, b) -> {
+9            if (a[0] == b[0]) {
+10                return b[1] - a[1];
+11            } else {
+12                return a[0] - b[0];
+13            }
+14        });
 15        
-16        // Case 1: value is already covered by the lower interval
-17        if (l != null && treeMap.get(l)[1] >= value) {
-18            return;
-19        }
-20        
-21        boolean mergeWithLeft = (l != null && treeMap.get(l)[1] + 1 == value);
-22        boolean mergeWithRight = (h != null && h == value + 1);
-23        
-24        if (mergeWithLeft && mergeWithRight) {
-25            // Case 2: value bridges both lower and higher intervals
-26            treeMap.get(l)[1] = treeMap.get(h)[1];
-27            treeMap.remove(h);
-28        } else if (mergeWithLeft) {
-29            // Case 3: value extends the lower interval to the right
-30            treeMap.get(l)[1] = value;
-31        } else if (mergeWithRight) {
-32            // Case 4: value extends the higher interval to the left
-33            int[] rightInterval = treeMap.remove(h);
-34            treeMap.put(value, new int[]{value, rightInterval[1]});
-35        } else {
-36            // Case 5: value creates a standalone single-element interval
-37            treeMap.put(value, new int[]{value, value});
-38        }
-39    }
-40    
-41    public int[][] getIntervals() {
-42        int[][] result = new int[treeMap.size()][2];
-43        int i = 0;
-44        for (int[] interval : treeMap.values()) {
-45            result[i++] = interval;
-46        }
-47        return result;
-48    }
-49}
+16        // Find the Longest Increasing Subsequence (LIS) on heights
+17        int[] dp = new int[envelopes.length];
+18        int len = 0;
+19        
+20        for (int[] envelope : envelopes) {
+21            int height = envelope[1];
+22            int idx = Arrays.binarySearch(dp, 0, len, height);
+23            
+24            // If the element is not found, binarySearch returns -(insertion point) - 1
+25            if (idx < 0) {
+26                idx = -(idx + 1);
+27            }
+28            
+29            dp[idx] = height;
+30            if (idx == len) {
+31                len++;
+32            }
+33        }
+34        
+35        return len;
+36    }
+37}
