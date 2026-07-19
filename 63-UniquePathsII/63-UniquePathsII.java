@@ -1,23 +1,37 @@
-// Last updated: 19/07/2026, 20:06:49
-1class Solution {
-2    public int removeDuplicates(int[] nums) {
-3        // If the array has 2 or fewer elements, it already satisfies the condition
-4        if (nums.length <= 2) {
-5            return nums.length;
-6        }
-7        
-8        // Pointer to place the next valid element
-9        int k = 2;
-10        
-11        // Iterate through the array starting from the 3rd element
-12        for (int i = 2; i < nums.length; i++) {
-13            // Check if the current element is different from the element placed 2 positions back
-14            if (nums[i] != nums[k - 2]) {
-15                nums[k] = nums[i];
-16                k++;
-17            }
-18        }
-19        
-20        return k;
-21    }
-22}
+// Last updated: 19/07/2026, 20:07:22
+1/**
+2 * Definition for singly-linked list.
+3 * public class ListNode {
+4 *     int val;
+5 *     ListNode next;
+6 *     ListNode() {}
+7 *     ListNode(int val) { this.val = val; }
+8 *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+9 * }
+10 */
+11class Solution {
+12    public ListNode deleteDuplicates(ListNode head) {
+13        // Sentinel node to simplify edge cases where the head changes
+14        ListNode sentinel = new ListNode(0, head);
+15        ListNode prev = sentinel;
+16        
+17        while (head != null) {
+18            // If it's a start of a duplicate sublist
+19            if (head.next != null && head.val == head.next.val) {
+20                // Move until the end of the duplicate sublist
+21                while (head.next != null && head.val == head.next.val) {
+22                    head = head.next;
+23                }
+24                // Skip all duplicates and connect prev to the next distinct node
+25                prev.next = head.next;
+26            } else {
+27                // No duplicate detected, safely move the prev pointer
+28                prev = prev.next;
+29            }
+30            // Move forward in the list
+31            head = head.next;
+32        }
+33        
+34        return sentinel.next;
+35    }
+36}
