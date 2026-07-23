@@ -1,28 +1,38 @@
-// Last updated: 23/07/2026, 21:50:05
-1class Solution {
-2    public int numDecodings(String s) {
-3        if (s == null || s.length() == 0 || s.charAt(0) == '0') {
-4            return 0; 
-5        }
-6
-7        int n = s.length();
-8        int[] dp = new int[n + 1];
-9
-10        dp[0] = 1; // Empty string has 1 valid decoding way
-11        dp[1] = 1; // Single valid non-zero character has 1 way
-12
-13        for (int i = 2; i <= n; i++) {
-14            int oneDigit = Integer.parseInt(s.substring(i - 1, i));
-15            if (oneDigit >= 1 && oneDigit <= 9) {
-16                dp[i] += dp[i - 1];
-17            }
-18
-19            int twoDigits = Integer.parseInt(s.substring(i - 2, i));
-20            if (twoDigits >= 10 && twoDigits <= 26) {
-21                dp[i] += dp[i - 2];
-22            }
-23        }
-24
-25        return dp[n];
-26    }
-27}
+// Last updated: 23/07/2026, 22:29:29
+1/**
+2 * Definition for singly-linked list.
+3 * public class ListNode {
+4 *     int val;
+5 *     ListNode next;
+6 *     ListNode() {}
+7 *     ListNode(int val) { this.val = val; }
+8 *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+9 * }
+10 */
+11class Solution {
+12    public ListNode reverseBetween(ListNode head, int left, int right) {
+13        if (head == null || left == right) {
+14            return head;
+15        }
+16
+17     
+18        ListNode dummy = new ListNode(0);
+19        dummy.next = head;
+20
+21        ListNode prev = dummy;
+22        for (int i = 0; i < left - 1; i++) {
+23            prev = prev.next;
+24        }
+25
+26        ListNode curr = prev.next;
+27
+28        for (int i = 0; i < right - left; i++) {
+29            ListNode temp = curr.next;
+30            curr.next = temp.next;
+31            temp.next = prev.next;
+32            prev.next = temp;
+33        }
+34
+35        return dummy.next;
+36    }
+37}
