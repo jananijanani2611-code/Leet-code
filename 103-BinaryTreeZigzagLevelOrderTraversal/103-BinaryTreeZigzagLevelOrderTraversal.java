@@ -1,46 +1,58 @@
-// Last updated: 30/07/2026, 08:55:47
+// Last updated: 30/07/2026, 09:15:49
 1/**
-2 * Definition for a binary tree node.
-3 * public class TreeNode {
+2 * Definition for singly-linked list.
+3 * public class ListNode {
 4 *     int val;
-5 *     TreeNode left;
-6 *     TreeNode right;
-7 *     TreeNode() {}
-8 *     TreeNode(int val) { this.val = val; }
-9 *     TreeNode(int val, TreeNode left, TreeNode right) {
-10 *         this.val = val;
-11 *         this.left = left;
-12 *         this.right = right;
-13 *     }
-14 * }
-15 */
-16import java.util.*;
-17
-18class Solution {
-19    public List<List<Integer>> levelOrderBottom(TreeNode root) {
-20        List<List<Integer>> result = new ArrayList<>();
-21        if (root == null) {
-22            return result;
-23        }
-24
-25        Queue<TreeNode> queue = new LinkedList<>();
-26        queue.add(root);
-27
-28        while (!queue.isEmpty()) {
-29            int levelSize = queue.size();
-30            List<Integer> currentLevel = new ArrayList<>();
-31
-32            for (int i = 0; i < levelSize; i++) {
-33                TreeNode node = queue.poll();
-34                currentLevel.add(node.val);
-35
-36                if (node.left != null) queue.add(node.left);
-37                if (node.right != null) queue.add(node.right);
-38            }
+5 *     ListNode next;
+6 *     ListNode() {}
+7 *     ListNode(int val) { this.val = val; }
+8 *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+9 * }
+10 */
+11/**
+12 * Definition for a binary tree node.
+13 * public class TreeNode {
+14 *     int val;
+15 *     TreeNode left;
+16 *     TreeNode right;
+17 *     TreeNode() {}
+18 *     TreeNode(int val) { this.val = val; }
+19 *     TreeNode(int val, TreeNode left, TreeNode right) {
+20 *         this.val = val;
+21 *         this.left = left;
+22 *         this.right = right;
+23 *     }
+24 * }
+25 */
+26class Solution {
+27    public TreeNode sortedListToBST(ListNode head) {
+28        if (head == null) {
+29            return null;
+30        }
+31        if (head.next == null) {
+32            return new TreeNode(head.val);
+33        }
+34
+35       
+36        ListNode prev = null;
+37        ListNode slow = head;
+38        ListNode fast = head;
 39
-40            result.add(0, currentLevel);
-41        }
-42
-43        return result;
-44    }
-45}
+40        while (fast != null && fast.next != null) {
+41            prev = slow;
+42            slow = slow.next;
+43            fast = fast.next.next;
+44        }
+45
+46        if (prev != null) {
+47            prev.next = null;
+48        }
+49
+50        TreeNode root = new TreeNode(slow.val);
+51
+52        root.left = sortedListToBST(head);
+53        root.right = sortedListToBST(slow.next);
+54
+55        return root;
+56    }
+57}
