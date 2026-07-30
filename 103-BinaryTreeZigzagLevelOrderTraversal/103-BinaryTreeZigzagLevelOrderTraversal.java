@@ -1,4 +1,4 @@
-// Last updated: 30/07/2026, 08:53:30
+// Last updated: 30/07/2026, 08:54:25
 1/**
 2 * Definition for a binary tree node.
 3 * public class TreeNode {
@@ -18,35 +18,35 @@
 17import java.util.Map;
 18
 19class Solution {
-20    private int preorderIndex;
+20    private int postorderIndex;
 21    private Map<Integer, Integer> inorderIndexMap;
 22
-23    public TreeNode buildTree(int[] preorder, int[] inorder) {
-24        preorderIndex = 0;
-25        inorderIndexMap = new HashMap<>();
-26
-27        // Store value -> index mappings for O(1) lookup in inorder array
-28        for (int i = 0; i < inorder.length; i++) {
-29            inorderIndexMap.put(inorder[i], i);
-30        }
-31
-32        return arrayToTree(preorder, 0, inorder.length - 1);
-33    }
-34
-35    private TreeNode arrayToTree(int[] preorder, int left, int right) {
-36    
-37        if (left > right) {
-38            return null;
-39        }
-40
-41        int rootVal = preorder[preorderIndex++];
-42        TreeNode root = new TreeNode(rootVal);
-43
-44    
+23    public TreeNode buildTree(int[] inorder, int[] postorder) {
+24
+25        postorderIndex = postorder.length - 1;
+26        inorderIndexMap = new HashMap<>();
+27
+28  
+29        for (int i = 0; i < inorder.length; i++) {
+30            inorderIndexMap.put(inorder[i], i);
+31        }
+32
+33        return arrayToTree(postorder, 0, inorder.length - 1);
+34    }
+35
+36    private TreeNode arrayToTree(int[] postorder, int left, int right) {
+37
+38        if (left > right) {
+39            return null;
+40        }
+41
+42        int rootVal = postorder[postorderIndex--];
+43        TreeNode root = new TreeNode(rootVal);
+44
 45        int rootInorderIndex = inorderIndexMap.get(rootVal);
 46
-47        root.left = arrayToTree(preorder, left, rootInorderIndex - 1);
-48        root.right = arrayToTree(preorder, rootInorderIndex + 1, right);
+47        root.right = arrayToTree(postorder, rootInorderIndex + 1, right);
+48        root.left = arrayToTree(postorder, left, rootInorderIndex - 1);
 49
 50        return root;
 51    }
